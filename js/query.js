@@ -40,7 +40,6 @@ Query.prototype.createMarkersForPlaceResults = function(results, status) {
   currentQuery.infoWindows = [];
   console.log(status);
   if (status == google.maps.places.PlacesServiceStatus.OK) {
-    console.log("Results length: " + results.length);
     for (var i = 0; i < results.length; i++) {
       currentQuery.createMarker(results[i]);
     }
@@ -57,7 +56,6 @@ Query.prototype.pickRandomResultAndGenerateURL = function(results, status) {
   if (status == google.maps.places.PlacesServiceStatus.OK) {
     var randomNumber = Math.floor(Math.random() * (results.length));
     var randomResult = results[randomNumber];
-    console.log(randomResult)
     var randomResultLocation = randomResult.geometry.location;
     service.getDetails(randomResult, function(result, status) {
       if (status !== google.maps.places.PlacesServiceStatus.OK) {
@@ -100,8 +98,6 @@ Query.prototype.createMarker = function(place, infoWindows) {
         console.error(status);
         return;
       }
-      console.log(result)
-
       // https://www.google.com/maps/dir/startLat,startLng/DestName,DestAddr/DestLat,DestLng/
       var directionsURL = currentQuery.generateDestinationURL(placeLoc, result)
       var contentString = '<h5>' + result.name + '</h5><p><a href="' + directionsURL + '" target="_blank">Go Here</a></p>';
@@ -115,8 +111,8 @@ Query.prototype.createMarker = function(place, infoWindows) {
 
 Query.prototype.generateDestinationURL = function (destinationLocation, destinationObject) {
   var directionsURL = 'https://www.google.com/maps/dir/' +
-    this.searchSession.currentCenter.lat + ',' +
-    this.searchSession.currentCenter.lng + '/' +
+    this.searchSession.map.getCenter().lat() + ',' +
+    this.searchSession.map.getCenter().lng() + '/' +
     destinationObject.name + ',' + destinationObject.formatted_address + '/@' +
     destinationLocation.lat() + ',' + destinationLocation.lng();
   return directionsURL;
@@ -130,7 +126,7 @@ Query.prototype.generateSearchKeywords = function() {
   }
 
   if (this.hipsterFlag) {
-    this.keywords.push('-chain');
+    this.keywords.push('-applebees');
   }
 
   if (this.pickyFlag) {
@@ -166,7 +162,7 @@ Query.prototype.toggleRelatedFlags = function(keyword) {
     case "vegetarian":
       this.hippieFlag = false;
       break;
-    case "-chain":
+    case "-applebees":
       this.hipsterFlag = false;
       break;
     case "american OR italian":
